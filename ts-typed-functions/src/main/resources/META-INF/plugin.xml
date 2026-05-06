@@ -1,0 +1,42 @@
+<idea-plugin>
+    <id>io.meiro.ts-typed-functions</id>
+    <name>TS Typed Functions</name>
+    <vendor>Meiro</vendor>
+
+    <description><![CDATA[
+        Find TypeScript functions whose signature structurally matches a type alias,
+        even when the function does not name the alias.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>JavaScript</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileBasedIndex implementation="io.meiro.tstypedfunctions.SignatureStubIndex"/>
+        <fileBasedIndex implementation="io.meiro.tstypedfunctions.ImplementationStubIndex"/>
+        <fileBasedIndex implementation="io.meiro.tstypedfunctions.FactoryStubIndex"/>
+        <codeInsight.lineMarkerProvider
+            language="TypeScript"
+            implementationClass="io.meiro.tstypedfunctions.SignatureLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider
+            language="TypeScript JSX"
+            implementationClass="io.meiro.tstypedfunctions.SignatureLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider
+            language="TypeScript"
+            implementationClass="io.meiro.tstypedfunctions.ImplementationLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider
+            language="TypeScript JSX"
+            implementationClass="io.meiro.tstypedfunctions.ImplementationLineMarkerProvider"/>
+    </extensions>
+
+    <actions>
+        <action id="io.meiro.tstypedfunctions.FindImplementations"
+                class="io.meiro.tstypedfunctions.FindImplementationsAction"
+                text="Find Implementations of Type Signature"
+                description="Find all functions whose signature matches this type alias">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="control alt shift P"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt shift P"/>
+        </action>
+    </actions>
+</idea-plugin>
