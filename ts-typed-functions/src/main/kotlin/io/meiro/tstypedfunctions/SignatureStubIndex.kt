@@ -1,8 +1,7 @@
 package io.meiro.tstypedfunctions
 
-import com.intellij.lang.javascript.TypeScriptFileType
-import com.intellij.lang.javascript.TypeScriptJSXFileType
 import com.intellij.lang.javascript.psi.ecma6.TypeScriptTypeAlias
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScope
@@ -41,8 +40,10 @@ class SignatureStubIndex : FileBasedIndexExtension<String, Void>() {
 
     override fun getInputFilter() =
         DefaultFileTypeSpecificInputFilter(
-            TypeScriptFileType.INSTANCE,
-            TypeScriptJSXFileType.INSTANCE,
+            *listOfNotNull(
+                FileTypeManager.getInstance().findFileTypeByName("TypeScript"),
+                FileTypeManager.getInstance().findFileTypeByName("TypeScript JSX"),
+            ).toTypedArray(),
         )
 
     override fun dependsOnFileContent(): Boolean = true
