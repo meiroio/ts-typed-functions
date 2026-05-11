@@ -63,7 +63,7 @@ class FindImplementationsAction : AnAction() {
 
         if (matches.isEmpty()) {
             JBPopupFactory.getInstance()
-                .createMessage("No implementations found")
+                .createMessage("No matches found")
                 .showInBestPositionFor(e.dataContext)
             return
         }

@@ -1,12 +1,39 @@
 <idea-plugin>
     <id>io.meiro.ts-typed-functions</id>
     <name>TS Typed Functions</name>
-    <vendor>Meiro</vendor>
+    <vendor email="odis@meiro.io" url="https://meiro.io">Meiro</vendor>
 
     <description><![CDATA[
-        Find TypeScript functions whose signature structurally matches a type alias,
-        even when the function does not name the alias.
+        <p>Navigate between TypeScript function-typed type aliases and the functions that implement them
+        &mdash; even when the implementation does not name the alias.</p>
+
+        <p><b>Features</b></p>
+        <ul>
+          <li>Gutter icon on each function-typed type alias linking to matching implementations.</li>
+          <li>Reverse gutter icon on top-level functions and <code>const</code>/<code>let</code> arrow/expression
+              initializers, linking back to matching signatures.</li>
+          <li><b>Find Implementations of Type Signature</b> action (default shortcut
+              <kbd>Ctrl+Alt+Shift+P</kbd> / <kbd>Cmd+Alt+Shift+P</kbd>) for caret-based lookup.</li>
+          <li>Factory detection &mdash; top-level functions whose explicit return type names a signature alias
+              are surfaced alongside direct implementations, marked <code>[factory]</code>.</li>
+        </ul>
+
+        <p>Matching is structural and loose: a function implements an alias when its parameter and return type
+        names align with the alias signature, regardless of import path or whether the alias is named on the
+        function itself. Class methods, object-literal methods, and generic aliases are out of scope.</p>
     ]]></description>
+
+    <change-notes><![CDATA[
+        <h3>0.1.0</h3>
+        <ul>
+          <li>Initial release.</li>
+          <li>Gutter icons on TypeScript function-typed type aliases and their implementations.</li>
+          <li>Reverse gutter from implementations back to signatures.</li>
+          <li><b>Find Implementations of Type Signature</b> action with default keymap binding.</li>
+          <li>Factory detection: top-level functions whose return type names a signature alias appear
+              alongside direct implementations, marked <code>[factory]</code>.</li>
+        </ul>
+    ]]></change-notes>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>JavaScript</depends>

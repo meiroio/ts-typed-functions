@@ -2,8 +2,8 @@ import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
-    kotlin("jvm") version "2.0.21"
-    id("org.jetbrains.intellij.platform") version "2.1.0"
+    kotlin("jvm") version "2.3.0"
+    id("org.jetbrains.intellij.platform") version "2.16.0"
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -23,7 +23,6 @@ dependencies {
         bundledPlugins(
             providers.gradleProperty("platformBundledPlugins").map { it.split(",") },
         )
-        instrumentationTools()
         pluginVerifier()
         testFramework(TestFrameworkType.Platform)
     }
@@ -40,7 +39,7 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            ide(IntelliJPlatformType.IntellijIdeaUltimate, providers.gradleProperty("platformVersion").get())
+            create(IntelliJPlatformType.IntellijIdeaUltimate, providers.gradleProperty("platformVersion").get())
         }
     }
 }
@@ -51,5 +50,4 @@ kotlin {
 
 tasks.test {
     useJUnit()
-    systemProperty("idea.force.use.core.classloader", "true")
 }
