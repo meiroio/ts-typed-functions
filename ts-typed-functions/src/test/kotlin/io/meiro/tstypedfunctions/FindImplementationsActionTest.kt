@@ -101,6 +101,37 @@ class FindImplementationsActionTest : BasePlatformTestCase() {
         )
     }
 
+    fun testActionResolvesAnnotatedImplementationsInsideFactory() {
+        myFixture.addFileToProject(
+            "repo.ts",
+            """
+            export function makeRepo(client: any) {
+                const findByName: Signature = async (input) => null as any;
+                return { findByName };
+            }
+            """.trimIndent(),
+        )
+        myFixture.configureByText(
+            "signature.ts",
+            "export type Signa<caret>ture = (input: Foo) => Promise<Bar>;",
+        )
+
+        val element = myFixture.file.findElementAt(myFixture.caretOffset)!!
+        val alias = com.intellij.psi.util.PsiTreeUtil.getParentOfType(
+            element,
+            com.intellij.lang.javascript.psi.ecma6.TypeScriptTypeAlias::class.java,
+        )!!
+
+        val matches = com.intellij.openapi.application.ReadAction.compute<List<Match>, RuntimeException> {
+            collectMatches(project, alias)
+        }
+        assertEquals(1, matches.size)
+        val match = matches.single()
+        assertFalse("annotated match is not a factory", match.isFactory)
+        assertEquals("findByName", match.displayName)
+        assertEquals("repo.ts", match.fileName)
+    }
+
     private fun dataContextFromEditor() = MapDataContext().apply {
         put(com.intellij.openapi.actionSystem.CommonDataKeys.PROJECT, project)
         put(com.intellij.openapi.actionSystem.CommonDataKeys.EDITOR, myFixture.editor)

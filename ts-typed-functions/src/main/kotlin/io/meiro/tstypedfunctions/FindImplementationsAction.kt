@@ -1,6 +1,5 @@
 package io.meiro.tstypedfunctions
 
-import com.intellij.lang.javascript.psi.JSFunction
 import com.intellij.lang.javascript.psi.ecma6.TypeScriptTypeAlias
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
@@ -11,10 +10,15 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
-import com.intellij.psi.PsiFile
+import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
-internal data class Match(val fn: JSFunction, val isFactory: Boolean)
+internal data class Match(
+    val nav: NavigatablePsiElement,
+    val displayName: String,
+    val fileName: String,
+    val isFactory: Boolean = false,
+)
 
 internal class MatchPopupStep(
     aliasName: String,
@@ -22,15 +26,13 @@ internal class MatchPopupStep(
 ) : BaseListPopupStep<Match>("Implementations of $aliasName", matches) {
 
     override fun getTextFor(value: Match): String {
-        val name = value.fn.name ?: "<anonymous>"
-        val file = value.fn.containingFile?.name ?: "?"
         val prefix = if (value.isFactory) "[factory] " else ""
-        return "$prefix$name  ($file)"
+        return "$prefix${value.displayName}  (${value.fileName})"
     }
 
     override fun onChosen(selected: Match, finalChoice: Boolean): PopupStep<*>? {
         ApplicationManager.getApplication().invokeLater {
-            selected.fn.navigate(true)
+            selected.nav.navigate(true)
         }
         return FINAL_CHOICE
     }
@@ -40,11 +42,29 @@ internal fun collectMatches(project: Project, alias: TypeScriptTypeAlias): List<
     val key = SignatureKey.of(alias) ?: return emptyList()
     val aliasName = alias.name ?: return emptyList()
 
-    val implementations = ImplementationStubIndex.findFunctions(project, key)
-        .map { Match(it, isFactory = false) }
-    val factories = FactoryStubIndex.findFactories(project, aliasName)
-        .map { Match(it, isFactory = true) }
-    return implementations + factories
+    val implementations = ImplementationStubIndex.findFunctions(project, key).map { fn ->
+        Match(
+            nav = fn,
+            displayName = fn.name ?: "<anonymous>",
+            fileName = fn.containingFile?.name ?: "?",
+        )
+    }
+    val factories = FactoryStubIndex.findFactories(project, aliasName).map { fn ->
+        Match(
+            nav = fn,
+            displayName = fn.name ?: "<anonymous>",
+            fileName = fn.containingFile?.name ?: "?",
+            isFactory = true,
+        )
+    }
+    val annotated = AnnotatedImplementationStubIndex.findAnnotatedImplementations(project, aliasName).map { v ->
+        Match(
+            nav = v,
+            displayName = v.name ?: "<anonymous>",
+            fileName = v.containingFile?.name ?: "?",
+        )
+    }
+    return implementations + factories + annotated
 }
 
 class FindImplementationsAction : AnAction() {
@@ -75,7 +95,7 @@ class FindImplementationsAction : AnAction() {
     }
 
     private fun aliasUnderCaret(e: AnActionEvent): TypeScriptTypeAlias? {
-        val file = e.getData(CommonDataKeys.PSI_FILE) as? PsiFile ?: return null
+        val file = e.getData(CommonDataKeys.PSI_FILE) ?: return null
         val editor = e.getData(CommonDataKeys.EDITOR) ?: return null
         val element = file.findElementAt(editor.caretModel.offset) ?: return null
         val alias = PsiTreeUtil.getParentOfType(element, TypeScriptTypeAlias::class.java) ?: return null

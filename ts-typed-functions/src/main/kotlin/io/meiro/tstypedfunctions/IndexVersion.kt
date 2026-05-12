@@ -9,4 +9,4 @@ package io.meiro.tstypedfunctions
  * all use this constant because they share canonicalization rules and
  * the module-scope filter in ModuleScope.kt.
  */
-internal const val INDEX_VERSION: Int = 2
+internal const val INDEX_VERSION: Int = 3

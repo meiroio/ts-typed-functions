@@ -33,7 +33,7 @@ cd ts-typed-functions
 ./gradlew buildPlugin
 ```
 
-The output lands at `ts-typed-functions/build/distributions/ts-typed-functions-0.1.0.zip`.
+The output lands at `ts-typed-functions/build/distributions/ts-typed-functions-0.2.0.zip`.
 
 In WebStorm (or IntelliJ IDEA Ultimate): **Settings → Plugins → ⚙ → Install Plugin from Disk…**, pick the ZIP, then restart the IDE.
 
@@ -51,6 +51,19 @@ The action **Find Implementations of Type Signature** runs from the caret on a f
 
 Both the gutter and the action also surface **factories** — top-level functions whose explicit return type names the signature alias. For example, `function makeCreateIdentifierType(): CreateIdentifierType { ... }` will appear among the matches for `CreateIdentifierType`, marked `[factory]` in the action's popup. The factory's own parameter shape is not checked; only its declared return type matters.
 
+Matches also include **annotated implementations** — typed `const`/`let` declarations whose type annotation names the signature alias and whose initializer is a function literal. This catches implementations declared inside a repository-style factory:
+
+```ts
+export function makeIdentifierTypesRepository(client: typeof db) {
+  const findIdentifierTypeByName: FindIdentifierTypeByName = async (name) => {
+    // ...
+  };
+  return { findIdentifierTypeByName };
+}
+```
+
+The structural matcher would skip this because the arrow function has no parameter or return type annotations of its own. The annotation-based path picks it up via the variable's type annotation. The annotation must be a single, unqualified identifier (no generics, unions, or intersections).
+
 ## Edge cases handled
 
 - Implementations missing a type on any parameter or return type are skipped (no guessed matches).
@@ -63,7 +76,7 @@ Both the gutter and the action also surface **factories** — top-level function
 - **Renamed imports.** A type imported via `import { Foo as Bar }` and used as `Bar` won't cross-match a signature that uses `Foo`.
 - **Generic signatures.** Type aliases that declare type parameters (e.g. `type Handler<T> = (x: T) => void`) are not indexed.
 - **Strict TypeScript structural compatibility.** Real assignability checking is out of scope — matching is based on type-name shape, not the TypeScript type system.
-- **Class methods.** Only top-level functions and `const`/`let` arrow/function-expression initializers are considered implementations.
+- **Class methods.** Only top-level functions and `const`/`let` arrow/function-expression initializers are considered implementations (the annotation-based path additionally covers nested `const`/`let` declarations).
 
 ## Architecture
 

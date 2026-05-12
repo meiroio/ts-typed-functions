@@ -24,6 +24,16 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>0.2.0</h3>
+        <ul>
+          <li>Annotation-based matching: typed <code>const</code>/<code>let</code> declarations whose type
+              annotation names a signature alias and whose initializer is a function literal are now surfaced
+              as implementations. Catches the repository-style pattern where adapters are nested inside a
+              factory function (e.g. <code>const findX: FindX = async (...) =&gt; ...</code> inside
+              <code>makeXRepository(...)</code>).</li>
+          <li>"No implementations found" popup message changed to "No matches found" (now covers factories and
+              annotated implementations as well as direct structural matches).</li>
+        </ul>
         <h3>0.1.0</h3>
         <ul>
           <li>Initial release.</li>
@@ -42,6 +52,7 @@
         <fileBasedIndex implementation="io.meiro.tstypedfunctions.SignatureStubIndex"/>
         <fileBasedIndex implementation="io.meiro.tstypedfunctions.ImplementationStubIndex"/>
         <fileBasedIndex implementation="io.meiro.tstypedfunctions.FactoryStubIndex"/>
+        <fileBasedIndex implementation="io.meiro.tstypedfunctions.AnnotatedImplementationStubIndex"/>
         <codeInsight.lineMarkerProvider
             language="TypeScript"
             implementationClass="io.meiro.tstypedfunctions.SignatureLineMarkerProvider"/>

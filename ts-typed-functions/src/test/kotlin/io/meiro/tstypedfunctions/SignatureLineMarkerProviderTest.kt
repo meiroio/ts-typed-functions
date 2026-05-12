@@ -110,4 +110,28 @@ class SignatureLineMarkerProviderTest : BasePlatformTestCase() {
         val gutters = myFixture.findGuttersAtCaret()
         assertEquals(1, gutters.size)
     }
+
+    fun testGutterIncludesAdapterAnnotatedInsideFactory() {
+        myFixture.addFileToProject(
+            "repo.ts",
+            """
+            export function makeRepo(client: any) {
+                const findByName: Signature = async (input) => null as any;
+                return { findByName };
+            }
+            """.trimIndent(),
+        )
+        myFixture.configureByText(
+            "signature.ts",
+            "export type Signa<caret>ture = (input: Foo) => Promise<Bar>;",
+        )
+
+        val gutters = myFixture.findGuttersAtCaret()
+        assertEquals(1, gutters.size)
+
+        val annotated = com.intellij.openapi.application.ReadAction.compute<List<*>, RuntimeException> {
+            AnnotatedImplementationStubIndex.findAnnotatedImplementations(project, "Signature")
+        }
+        assertEquals(1, annotated.size)
+    }
 }

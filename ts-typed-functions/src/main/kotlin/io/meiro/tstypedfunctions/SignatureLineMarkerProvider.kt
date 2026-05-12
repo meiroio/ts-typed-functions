@@ -28,7 +28,12 @@ class SignatureLineMarkerProvider : RelatedItemLineMarkerProvider() {
         val project = parent.project
         val implementations = ImplementationStubIndex.findFunctions(project, key)
         val factories = FactoryStubIndex.findFactories(project, aliasName)
-        val targets = implementations + factories
+        val annotated = AnnotatedImplementationStubIndex.findAnnotatedImplementations(project, aliasName)
+        val targets = buildList<PsiElement> {
+            addAll(implementations)
+            addAll(factories)
+            addAll(annotated)
+        }
         if (targets.isEmpty()) return
 
         val builder = NavigationGutterIconBuilder.create(AllIcons.Gutter.ImplementedMethod)

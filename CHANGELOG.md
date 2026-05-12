@@ -5,6 +5,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-05-11
+
+### Added
+- Annotation-based matching: typed `const`/`let` declarations whose type annotation names a
+  signature alias and whose initializer is a function literal are now surfaced as
+  implementations. Catches the repository-style pattern where adapters are nested inside a
+  factory function (e.g. `const findX: FindX = async (...) => ...` inside
+  `makeXRepository(...)`).
+
+### Changed
+- "No implementations found" popup message changed to "No matches found" (now covers
+  factories and annotated implementations as well as direct structural matches).
+
 ## [0.1.0] - 2026-05-11
 
 ### Added
