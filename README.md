@@ -64,6 +64,10 @@ export function makeIdentifierTypesRepository(client: typeof db) {
 
 The structural matcher would skip this because the arrow function has no parameter or return type annotations of its own. The annotation-based path picks it up via the variable's type annotation. The annotation must be a single, unqualified identifier (no generics, unions, or intersections).
 
+## Result ordering
+
+Matches are ordered by filesystem proximity to the signature: same-directory matches first, then sibling directories, then more distant project files. Library / `node_modules` matches all share the bottom bucket (no internal ordering within that bucket). This keeps generic signatures like `() => string` usable — your project's implementations appear first, third-party noise last.
+
 ## Edge cases handled
 
 - Implementations missing a type on any parameter or return type are skipped (no guessed matches).

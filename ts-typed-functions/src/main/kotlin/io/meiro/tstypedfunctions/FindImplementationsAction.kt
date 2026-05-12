@@ -64,7 +64,9 @@ internal fun collectMatches(project: Project, alias: TypeScriptTypeAlias): List<
             fileName = v.containingFile?.name ?: "?",
         )
     }
-    return implementations + factories + annotated
+    val sigFile = alias.containingFile?.virtualFile
+    return (implementations + factories + annotated)
+        .sortedBy { proximityScore(sigFile, it.nav.containingFile?.virtualFile, project) }
 }
 
 class FindImplementationsAction : AnAction() {

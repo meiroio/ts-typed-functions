@@ -31,6 +31,9 @@
               as implementations. Catches the repository-style pattern where adapters are nested inside a
               factory function (e.g. <code>const findX: FindX = async (...) =&gt; ...</code> inside
               <code>makeXRepository(...)</code>).</li>
+          <li>Proximity-based ordering: matches are now sorted so implementations in the same directory as the
+              signature appear first, then siblings, then more distant project files. Library /
+              <code>node_modules</code> matches all sink to the bottom as a single bucket.</li>
           <li>"No implementations found" popup message changed to "No matches found" (now covers factories and
               annotated implementations as well as direct structural matches).</li>
         </ul>
