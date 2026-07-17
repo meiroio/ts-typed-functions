@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-05-12
+
+### Compatibility
+- Rebuilt against IntelliJ Platform build 262 (IntelliJ IDEA Ultimate / WebStorm 2026.2).
+  Supported build range is now `262`–`262.*`. Use 0.2.0 for 2026.1 (build 261).
+
 ## [0.2.0] - 2026-05-12
 
 ### Added

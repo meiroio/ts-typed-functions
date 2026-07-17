@@ -24,6 +24,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.0</h3>
+        <ul>
+          <li>Rebuilt for IntelliJ Platform build 262 (IntelliJ IDEA Ultimate / WebStorm 2026.2).
+              Use 0.2.0 for 2026.1 (build 261).</li>
+        </ul>
         <h3>0.2.0</h3>
         <ul>
           <li>Annotation-based matching: typed <code>const</code>/<code>let</code> declarations whose type
